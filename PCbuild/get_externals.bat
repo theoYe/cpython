@@ -20,6 +20,7 @@ if "%~1"=="--openssl-src" (set IncludeSSLSrc=true) & shift & goto CheckOpts
 if "%~1"=="--libffi-src" (set IncludeLibffiSrc=true) & shift & goto CheckOpts
 if "%~1"=="--python" (set PYTHON=%2) & shift & shift & goto CheckOpts
 if "%~1"=="--organization" (set ORG=%2) & shift & shift & goto CheckOpts
+if "%~1"=="--site" (set SITE=%2) & shift & shift & goto CheckOpts
 if "%~1"=="-c" (set DO_CLEAN=true) & shift & goto CheckOpts
 if "%~1"=="--clean" (set DO_CLEAN=true) & shift & goto CheckOpts
 if "%~1"=="--clean-only" (set DO_FETCH=false) & goto clean
@@ -42,6 +43,7 @@ if "%DO_FETCH%"=="false" goto end
 :fetch
 
 if "%ORG%"=="" (set ORG=python)
+if "%SITE%"=="" (set ORG=github.com)
 call "%PCBUILD%\find_python.bat" "%PYTHON%"
 
 if NOT DEFINED PYTHON (
@@ -69,7 +71,7 @@ for %%e in (%libraries%) do (
         git clone --depth 1 https://github.com/%ORG%/cpython-source-deps --branch %%e "%EXTERNALS_DIR%\%%e"
     ) else (
         echo.Fetching %%e...
-        %PYTHON% -E "%PCBUILD%\get_external.py" -O %ORG% -e "%EXTERNALS_DIR%" %%e
+        %PYTHON% -E "%PCBUILD%\get_external.py" -O %ORG% -e "%EXTERNALS_DIR%" %%e -s "%SITE%"
     )
 )
 
@@ -89,7 +91,7 @@ for %%b in (%binaries%) do (
         git clone --depth 1 https://github.com/%ORG%/cpython-bin-deps --branch %%b "%EXTERNALS_DIR%\%%b"
     ) else (
         echo.Fetching %%b...
-        %PYTHON% -E "%PCBUILD%\get_external.py" -b -O %ORG% -e "%EXTERNALS_DIR%" %%b
+        %PYTHON% -E "%PCBUILD%\get_external.py" -b -O %ORG% -e "%EXTERNALS_DIR%" %%b -s "%SITE%"
     )
 )
 

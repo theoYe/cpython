@@ -7,9 +7,9 @@ import zipfile
 from urllib.request import urlretrieve
 
 
-def fetch_zip(commit_hash, zip_dir, *, org='python', binary=False, verbose):
+def fetch_zip(commit_hash, zip_dir, *, org='python', site="github.com", binary=False, verbose):
     repo = f'cpython-{"bin" if binary else "source"}-deps'
-    url = f'https://github.com/{org}/{repo}/archive/{commit_hash}.zip'
+    url = f'https://{site}/{org}/{repo}/archive/{commit_hash}.zip'
     reporthook = None
     if verbose:
         reporthook = print
@@ -35,6 +35,8 @@ def parse_args():
                    help='Is the dependency in the binary repo?')
     p.add_argument('-O', '--organization',
                    help='Organization owning the deps repos', default='python')
+    p.add_argument('-s', '--site',
+                   help='choose a website to download archive', default='github.com')
     p.add_argument('-e', '--externals-dir', type=pathlib.Path,
                    help='Directory in which to store dependencies',
                    default=pathlib.Path(__file__).parent.parent / 'externals')
@@ -48,6 +50,7 @@ def main():
     zip_path = fetch_zip(
         args.tag,
         args.externals_dir / 'zips',
+        site=args.site,
         org=args.organization,
         binary=args.binary,
         verbose=args.verbose,
